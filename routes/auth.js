@@ -1,24 +1,42 @@
-const express = require('express');
-const router = express.Router();
-const passport = require('passport')
+module.exports = (app, passport) => {
+  app.get('/', (req, res, next) => {
+    res.send('lench api');
+  });
 
-router.get('/google', (req, res, next) => {
-  passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' });
-});
+  app.get('/profile', isLoggedIn, function(req, res) {
+    res.send(req.user);
+  });
 
-router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/auth/login' }),
-  (req, res) => {
+  app.get('/logout', (req, res) => {
+    req.logout();
+    res.rediect('/');
+  });
+
+  app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+  app.get('/auth/google/callback',
+      passport.authenticate('google', {
+          successRedirect : '/profile',
+          failureRedirect : '/'
+      }));
+
+  app.get('/connect/google', passport.authorize('google', { scope : ['profile', 'email'] }));
+
+  app.get('/connect/google/callback',
+      passport.authorize('google', {
+          successRedirect : '/profile',
+          failureRedirect : '/'
+      }));
+
+  app.get('/unlink/google', isLoggedIn, (req, res) => {
+      var user = req.user;
+      user.google.token = undefined;
+      user.save((err) => res.redirect('/profile'));
+  });
+};
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) return next();
     res.redirect('/');
-});
+}
 
-router.get('/login', (req, res, next) => {
-  res.end();
-})
-
-router.get('/logout', function (req, res) {
-  req.session = null
-  res.redirect('/')
-})
-
-module.exports = router
