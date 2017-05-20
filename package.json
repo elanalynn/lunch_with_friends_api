@@ -2,6 +2,7 @@
   "name": "lench_api",
   "version": "1.0.0",
   "private": false,
+  "repository": "git@github.com:elanalynn/lench_api.git",
   "scripts": {
     "start": "node ./bin/www"
   },
@@ -12,6 +13,11 @@
     "express": "~4.13.1",
     "knex": "^0.13.0",
     "morgan": "~1.6.1",
+    "passport": "^0.3.2",
+    "passport-google-oauth": "^1.0.0",
     "pg": "^6.2.2"
+  },
+  "devDependencies": {
+    "dotenv": "^4.0.0"
   }
 }
