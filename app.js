@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use('/', passport);
+
 app.use('/', routes);
 app.use('/auth', auth);
 app.use('/users', users);
