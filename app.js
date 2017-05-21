@@ -6,14 +6,10 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
-const mongoose = require('mongoose');
-const mongoDb = require('./config/mongodb.js');
 const cors = require('cors');
 const app = express();
 
-// const users = require('./routes/users');
-
-mongoose.connect(mongoDb.url)
+const users = require('./routes/users');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -28,7 +24,7 @@ app.use(passport.session());
 require('./config/passport')(passport);
 require('./routes/auth')(app, passport);
 
-// app.use('/users', users);
+app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
