@@ -1,6 +1,7 @@
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const User = require('../models/user');
 const config = require('./oauth');
+const User = require('../models/user');
+const userDbApi = require('../db/users');
 
 module.exports = passport => {
     passport.serializeUser((user, done) => {
@@ -20,14 +21,23 @@ module.exports = passport => {
     (req, token, refreshToken, profile, done) => {
         process.nextTick(() => {
             if (!req.user) {
-                User.findOne({ 'google.id' : profile.id }, (err, user) => {
+                User.findOne( { 'google.id' : profile.id }, (err, user) => {
                     if (err) return done(err);
                     if (user) {
-                        if (!user.google.token) {
-                            user.google.token = token;
-                            user.google.name  = profile.displayName;
-                            user.google.email = (profile.emails[0].value || '').toLowerCase();
+                        if (!user.token) {
+                            user.token = token;
+                            user.name  = profile.displayName;
+                            user.email = (profile.emails[0].value || '').toLowerCase();
 
+                            updatedUser = {
+                                id: user.id,
+                                token: user.token,
+                                first_name: user.name.split(' ')[0],
+                                last_name: user.name.split(' ')[1],
+                                email: user.email,
+                                avatar_link: profile._json['picture']
+                            }
+                            userDbApi.saveOne(updatedUser);
                             user.save((err) => {
                                 if (err) return done(err);
                                 return done(null, user);
@@ -35,34 +45,37 @@ module.exports = passport => {
                         }
                         return done(null, user);
                     } else {
-                        var newUser          = new User();
+                        var newUser = new User();
 
-                        newUser.google.id    = profile.id;
-                        newUser.google.token = token;
-                        newUser.google.name  = profile.displayName;
-                        newUser.google.email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.id = profile.id;
+                        newUser.token = token;
+                        newUser.name  = profile.displayName;
+                        newUser.email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.avatar_link = profile._json['picture'];
 
-                        newUser.save((err) => {
+                        userDbApi.saveOne(newUser);
+                        user.save((err) => {
                             if (err) return done(err);
-                            return done(null, newUser);
+                            return done(null, user);
                         });
                     }
                 });
 
             } else {
-                console.log(req.user);
                 const user = req.user;
 
-                user.google.id = profile.id;
-                user.google.token = token;
-                user.google.name = profile.displayName;
-                user.google.email = (profile.emails[0].value || '').toLowerCase();
+                user.id = profile.id;
+                user.token = token;
+                user.name = profile.displayName;
+                user.email = (profile.emails[0].value || '').toLowerCase();
+                user.avatar_link = profile._json['picture'];
 
-                user.save(function(err) {
+                userDbApi.saveOne(user);
+                user.save((err) => {
                     if (err) return done(err);
                     return done(null, user);
                 });
-            }
+}
         });
     }));
 };

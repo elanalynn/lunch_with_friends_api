@@ -3,11 +3,13 @@ const express = require('express');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
 const cors = require('cors');
 const app = express();
+const configDB = require('./config/mongoDB.js');
+mongoose.connect(configDB.url);
 
 const users = require('./routes/users');
 
@@ -17,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
 
-app.use(session({ secret: process.env.SESSION_SECRET, saveUninitialized: false, resave: true }));
+app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 

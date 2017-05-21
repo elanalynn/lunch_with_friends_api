@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": false,
   "repository": "git@github.com:elanalynn/lench_api.git",
+  "license": "MIT",
   "scripts": {
     "start": "node ./bin/www"
   },
@@ -14,6 +15,7 @@
     "express": "~4.13.1",
     "express-session": "^1.15.3",
     "knex": "^0.13.0",
+    "mongoose": "^4.10.0",
     "morgan": "~1.6.1",
     "passport": "^0.3.2",
     "passport-google-oauth": "^1.0.0",
