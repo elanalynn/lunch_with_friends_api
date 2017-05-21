@@ -21,7 +21,5 @@
     "passport-google-oauth": "^1.0.0",
     "pg": "^6.2.2"
   },
-  "devDependencies": {
-    "dotenv": "^4.0.0"
-  }
+  "devDependencies": {}
 }
