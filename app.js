@@ -23,6 +23,10 @@ app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitia
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/', (req, res, next) => {
+    res.send('Lench api');
+});
+
 require('./config/passport')(passport);
 require('./routes/auth')(app, passport);
 

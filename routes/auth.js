@@ -2,10 +2,6 @@ const auth = require('../helpers/auth');
 
 module.exports = (app, passport) => {
 
-    app.get('/', (req, res, next) => {
-        res.send('lench api');
-    });
-
     app.get('/logout', (req, res) => {
         req.logout();
         res.redirect('/');
