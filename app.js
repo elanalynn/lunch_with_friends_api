@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -12,6 +12,7 @@ const configDB = require('./config/mongoDB.js');
 mongoose.connect(configDB.url);
 
 const users = require('./routes/users');
+const spots = require('./routes/spots');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -27,10 +28,11 @@ app.get('/', (req, res, next) => {
     res.send('Lench api');
 });
 
+app.use('/users', users);
+app.use('/spots', spots);
+
 require('./config/passport')(passport);
 require('./routes/auth')(app, passport);
-
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
