@@ -1,23 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const request = require('request');
+const request = require('request-promise-native');
 
-router.get('/', (req, res, next) => {
-  const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&key=${process.env.PLACES_API_KEY}`
+router.get('/search', (req, res, next) => {
+    let location = req.query.location ? req.query.location : '39.718134,-104.900121';
+    let radius = req.query.radius ? req.query.radius : '5';
 
-  request.get(placesUrl)
-    .on('response', (response) => {
-        console.log(response.statusCode);
-        console.log(response.headers['content-type']); 
+    const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&key=${process.env.PLACES_API_KEY}`;
+
+    request.get(placesUrl)
+    .then(response => {
         res.send(response);
     })
-    .on('error', (err) => {
-        console.log(err)
+    .catch(err => {
+        console.log(err); 
     });
 });
 
+router.get('/', (req, res, next) => {
+    res.send('all the saved spots');
+});
+
 router.get('/:id', (req, res, next) => {
-    res.send();
+    res.send('one particular spot');
 });
 
 module.exports = router
