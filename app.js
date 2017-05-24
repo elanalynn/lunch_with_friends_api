@@ -10,6 +10,7 @@ const cors = require('cors');
 const app = express();
 const configDB = require('./config/mongoDB.js');
 mongoose.connect(configDB.url);
+require('./config/passport')(passport);
 
 const users = require('./routes/users');
 const spots = require('./routes/spots');
@@ -31,11 +32,10 @@ app.get('/', (req, res, next) => {
 app.use('/users', users);
 app.use('/spots', spots);
 
-require('./config/passport')(passport);
-require('./routes/auth')(app, passport);
+require('./routes/auth.js')(app, passport);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
